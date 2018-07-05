@@ -12,8 +12,15 @@ This repository contains much of the code behind the figures and demos covered i
 
 ## Contents
 This repository contains R code covering the following topics:
-1. Dirichlet Process Mixtures
-2. Gaussian Processes
+1. Dirichlet Process (DP) Mixtures
+    - We have an interactive tutorial for DP methods run through shiny. To run the app within RStudio, run the following lines of code while making sure to have "shiny" app installed
+
+```
+install.packages("shiny")
+library(shiny)
+runGitHub('jasonroy0/BNP-short-course/', username = 'jasonroy0', subdir = 'DP ShinyApp/DPMixApp/')
+``` 
+2. Gaussian Processes (GP)
 
 ## Issues
 If you have any issues with the code, please open an issue on GitHub.
