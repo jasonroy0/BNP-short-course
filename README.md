@@ -11,7 +11,7 @@ https://ww2.amstat.org/meetings/jsm/2018/onlineprogram/AbstractDetails.cfm?abstr
 This repository contains much of the code behind the figures and demos covered in the short course.
 
 ## Contents
-
+This repository contains R code covering the following topics:
 1. Dirichlet Process Mixtures
 2. Gaussian Processes
 
