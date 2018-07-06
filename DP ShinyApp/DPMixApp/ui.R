@@ -16,7 +16,7 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process (DP) Tutorial",
                  sliderInput(inputId = 'alpha',
                              label = "Concentration parameter, \\(\\alpha\\):",
                              min = 1,
-                             max = 500,
+                             max = 200,
                              value = 100)
                ),
                
@@ -34,7 +34,8 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process (DP) Tutorial",
                                          "Low values of \\( \\alpha \\) yields draws that are more widely distributed about \\(G_0\\)."),
                                     plotOutput("DPdraws"),
                                     HTML("Notice that the distributions drawn from a DP are discrete, as seen by the stepwise nature of the drawn CDFs.")),
-                           tabPanel("Stick-Breaking")
+                           tabPanel("Stick-Breaking",
+                                    plotOutput("StickBreakP1"))
                          )
                )
                )
