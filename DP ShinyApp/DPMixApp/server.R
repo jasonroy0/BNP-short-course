@@ -45,7 +45,7 @@ shinyServer(function(input, output) {
     
     plot( draws[,1,1], cumsum(draws[,2,1]), type=type, 
           ylab='CDFs Drawn from Dirichlet Process', xlab='x',
-          main = 'Ten draws from a Dirichlet process with given concentration and base distribution')
+          main = 'Ten realizations of a Dirichlet process with given concentration and base distribution')
     for(i in 2:10){
       lines( draws[,1,i], cumsum(draws[,2,i]), type=type)
     }
