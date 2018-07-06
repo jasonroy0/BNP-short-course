@@ -1,5 +1,5 @@
 library(shiny)
-tt <- readChar('test.txt', nchars = file.info('test.txt')$size)
+
 # Define UI for application that draws a histogram
 shinyUI(navbarPage(title = "Interactive Dirichlet Process (DP) Tutorial",
     tabPanel("Realizations of a DP",
