@@ -76,9 +76,23 @@ shinyServer(function(input, output) {
     parsed<-parse_input_DPdraw(input$base)
     draws <- replicate(1, rdp_stickbreak(input$alpha, G_0 = parsed$G_0 ) )
     
+    par(mfrow=c(1,2))
     plot(x = draws[,1,1], y=draws[,2,1], xlab='Atoms, v', ylab='weights, w',
          main = 'Realization of a stick-breaking process with 2500 breaks',
          type='h')
+    plot(x = draws[order(draws[,1,1]),1,1], 
+         y= cumsum(draws[order(draws[,1,1]),2,1]), xlab='Atoms, v', ylab='weights, w',
+         main = 'Realization of a stick-breaking process with 2500 breaks',
+         type='s')
+    cdf <- parsed$cdf
+    curve(expr = cdf, add=T, col='red', xlim= parsed$xlim, lwd=3, type=parsed$type)
+    legend('bottomright', 
+           legend = c('Draws from DP(alpha, G_0)', 'E[DP(alpha, G_0)] = G_0'),
+           col=c('black','red'),
+           lty = c(1,1), lwd=c(1,3),
+           bty='n')
+    
+    
     
   })
   
