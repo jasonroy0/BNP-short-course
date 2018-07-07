@@ -10,7 +10,7 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                               sidebarPanel(
                                 radioButtons(inputId="base", 
                                              label = "Base Distribution, \\(G_0\\):",
-                                             choices = list("Standard Normal" = 1, 
+                                             choices = list("N(0,1)" = 1, 
                                                             "Beta(2,2)" = 2, 
                                                             "Pois(10)" = 3), 
                                              selected = 1),
@@ -49,24 +49,63 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                                                         "The stick-breaking algorithm proceeds as follows.",
                                                         "<br> <br>",
                                                         "<ol>
-                                                            <li> Draw a random variable  \\(v_1 \\sim Beta(1, \\alpha) \\). </li>
-                                                            <li> Draw a random variable \\( m_1 \\sim G_0 \\).    </li>
-                                                            <li> Define \\( w_1 := v_1 \\). Let \\(w_1\\) be the measure on \\(m_1\\). </li>
-                                                            <li> Now, for \\( i=2,3,4 \\dots  \\), make the independent draws \\(v_i \\sim Beta(1, \\alpha) \\)  </li>
-                                                            <li> Construct \\( w_i \\) as \\(w_i := v_i \\prod_{j < i}(1 - v_j) \\).  </li>
+                                                            <li> Draw a random variable  \\(v_1 \\sim Beta(1, \\alpha) \\). Draw a random variable \\( m_1 \\sim G_0 \\). Define \\( w_1 := v_1 \\). </li>
+                                                            <li> Now, for \\( i=2,3,4 \\dots  \\), make the independent draws \\(v_i \\sim Beta(1, \\alpha) \\). Construct \\( w_i \\) as \\(w_i := v_i \\prod_{j < i}(1 - v_j) \\).  </li>
                                                             <li> Now, for \\( i=2,3,4 \\dots  \\), make the independent draws \\(m_i \\sim G_0 \\).  </li>
-                                                            <li> Let \\( w_i \\) be the measure on \\( m_i \\).  </li>
                                                         </ol>",
-                                                        "Note that theoretically we do this to infinity for \\(i=1,2, \\dots \\). The \\(m_i\\) are often called 'atoms' and the \\(w_i\\)$ are often referred to as 'weights'.",
+                                                        "Note that theoretically we do this to infinity for \\(i=1,2, \\dots \\). The \\(m_i\\) are often called 'atoms' and the \\(w_i\\) are often referred to as 'weights'.",
+                                                        "A draw \\( G(\\cdot) \\) from a \\( DP(\\alpha G_0) \\) is represented by",
+                                                        "$$G(\\cdot) = \\sum_{i=1}^\\infty w_i \\delta_{m_i}(\\cdot)$$",
+                                                        "Above, \\( \\delta_{m_i}(x) = I(x = m_i) \\) is an indicator of whether the input equals \\( m_i \\). If it does, we place the probability measure \\( w_i \\) on it.", 
+                                                        "Because the atoms are drawn from the base distribution, draws from the DP have the same support as the base distribution. The measure is 0 for values that don't match any atoms.",
                                                         "<br> <br>", 
-                                                        "This process is referred to as stick-breaking because it can be seen as breaking a unit-length stick into successively smaller sticks. For example, \\( v_1=w_1 = .25 \\) is analgous to breaking off one-fourth of the unit stick we start with. If \\(v_2=.5\\), then \\(w_2 = .5 \\cdot (1-.25) \\). Going with the analogy, we're breaking off one-half of the three quarters of the stick remaining from the previous break." ),
-                                                   plotOutput("StickBreakP1"))
+                                                        "This process is referred to as stick-breaking because it can be seen as breaking a unit-length stick into successively smaller sticks. For example, \\( v_1=w_1 = .25 \\) is analgous to breaking off one-fourth of the unit stick we start with. If \\(v_2=.5\\), then \\(w_2 = .5 \\cdot (1-.25) \\)." ,
+                                                        "Going with the analogy, we're breaking off one-half of the three quarters of the stick remaining from the previous break.",
+                                                        "<br> <br>",
+                                                        "In practice we can't keep breaking the stick forever. The plots below demonstrate stick-breaking for 2500 breaks."),
+                                                   plotOutput("StickBreakP1"),
+                                                   HTML("The first plot places a vertical bar at each atom. The height of each bar corresponds to the weight associated with each atom.",
+                                                        "This plot can be seen as a discrete pmf - placing a measure on each of the discrete atoms.",
+                                                        "The second plot takes the cumulative sum of the weights, forming a CDF. The previous panel plotted 10 of these CDFs",
+                                                        "<br> <br>",
+                                                        "Notice that the distribution drawn from the DP, as seen in the plot, is discrete over the same space as \\( G_0 \\). For example, if you switch to the Beta distribution, you'll see that the stick-breaking plots produce atoms between 0 and 1.",
+                                                        "For low levels of \\( \\alpha \\), just a few atoms get most of the probability mass.", 
+                                                        "For high values of \\( \\alpha \\), the probability mass is spread out over more atoms."))
                                           )
                                         )
                               )
                             ),
                    
-                   tabPanel("2. DP Posterior"),
+                   tabPanel("2. DP Posterior",
+                             sidebarLayout(
+                               sidebarPanel(
+                                 sliderInput(inputId = 'pr_lambda',
+                                             label = "\\(\\lambda\\) of prior base measure \\(G_0 = Pois(\\lambda)\\):",
+                                             min = 1,
+                                             max = 25,
+                                             value = 20),
+                                 sliderInput(inputId = 'alpha_2',
+                                             label = "Concentration parameter, \\(\\alpha\\):",
+                                             min = 1,
+                                             max = 500,
+                                             value = 100)
+                               ),
+                               mainPanel(withMathJax(),
+                                         tabsetPanel(
+                                           
+                                           
+                                           tabPanel("2.a. Posterior of a DP",
+                                                    tableOutput("freq_tab"),
+                                                    plotOutput("PoissonPosterior")
+                                           ),
+                                           
+                                           
+                                           tabPanel("2.b. Bayesian Bootstrap"
+                                           )
+                                         )
+                             )
+                            )
+                   ),
                    
                    tabPanel("3. DP Mixtures"),
                    

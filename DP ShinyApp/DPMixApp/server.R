@@ -45,7 +45,10 @@ parse_input_DPdraw <- function(base){
 ####                        Shiny Server Code                             ####
 ###------------------------------------------------------------------------###
 shinyServer(function(input, output) {
-  # draw from DP with standard normal base measure
+
+  ###------------------------------------------------------------------------###
+  ####                  Panel 1a - Drawing from a DP                        ####
+  ###------------------------------------------------------------------------###
 
   output$DPdraws <- renderPlot({
     
@@ -71,13 +74,17 @@ shinyServer(function(input, output) {
     
   })
   
+  ###------------------------------------------------------------------------###
+  ####                  Panel 1b - Stick Breaking                           ####
+  ###------------------------------------------------------------------------###
+  
   output$StickBreakP1 <- renderPlot({
     
     parsed<-parse_input_DPdraw(input$base)
     draws <- replicate(1, rdp_stickbreak(input$alpha, G_0 = parsed$G_0 ) )
     
     par(mfrow=c(1,2))
-    plot(x = draws[,1,1], y=draws[,2,1], xlab='Atoms, v', ylab='weights, w',
+    plot(x = draws[,1,1], y=draws[,2,1], xlab='Atoms, m_i', ylab='weights, w_i',
          main = 'Realization of a stick-breaking process with 2500 breaks',
          type='h')
     plot(x = draws[order(draws[,1,1]),1,1], 
@@ -91,9 +98,71 @@ shinyServer(function(input, output) {
            col=c('black','red'),
            lty = c(1,1), lwd=c(1,3),
            bty='n')
+    })
+  
+  ###------------------------------------------------------------------------###
+  ####                  Panel 2a - Posterior Example                        ####
+  ###------------------------------------------------------------------------###
+  
+  set.seed(10)
+  n <- 30
+  true_lambda <- 20
+  d <- rpois(n, lambda = true_lambda)
+  #output$freq_tab <- renderTable({table(d)})
+  
+  output$PoissonPosterior <- renderPlot({
     
+    set.seed(10)
+    n <- 30
+    true_lambda <- 20
     
+    alpha <- input$alpha_2
+    pr_lambda <- input$pr_lambda
+    
+    d <- rpois(n, lambda = true_lambda)
+    d <- factor(d, levels=0:max(d))
+    d <- d[d!=18] ## remove 18 for illustration.
+    
+    freq_tab <- table(d)/n
+    plot(freq_tab)
+    
+    d <- as.numeric(as.character(d))
+    
+    x_range <- 0:(max(d)+2)
+    pr_mean <- dpois(x = x_range, lambda = pr_lambda)
+    names(pr_mean) <- x_range
+    
+    post_exp <- (alpha/(alpha+n))*pr_mean + (n/(alpha+n))*c(freq_tab,c(0,0))
+    
+    # take some illustrative draws from posterior, also a DP.
+    G_0 <- function(n) sample(x = c(x_range, 30:100), size = n, replace = T, 
+                              prob = c((alpha/(alpha+n))*pr_mean + (n/(alpha+n))*c(freq_tab,c(0,0)), (alpha/(alpha+n))*dpois(30:100, pr_lambda)) )
+    tt <- replicate(n = 10, rdp_stickbreak(n + alpha, G_0) )
+        
+    
+    plot(freq_tab, xlim=c(0, max(d)+2), 
+         main = 'Observed Data with Posterior Mean of Data Distribution',
+         xlab='y', ylab='Probability/Relative Frequency of Observed Data')
+    lines(x_range, pr_mean, type='l')
+    lines(x_range, post_exp, type='l', col='red', lwd=3) 
+    legend('topleft', 
+           legend = c('Observed Frequency',
+                      'Prior mean, E[DP(alpha, G_0)] = G_0',
+                      'Posterior mean'),
+           col=c('black','black','red'),
+           lty = c(1,1,1), lwd=c(1,1,3),
+           bty='n')
+    
+    #points(tt[,1,3], 100*tt[,2,3], col='red')
+    # for(i in 1:10){
+    #   lines( tt[,1,i], tt[,2,i], type='l', col='gray')
+    # }
     
   })
+  
+  ###------------------------------------------------------------------------###
+  ####                  Panel 2b - Bayesian Bootstrap                       ####
+  ###------------------------------------------------------------------------###
+  
   
 })

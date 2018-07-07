@@ -1,5 +1,5 @@
 ## About
-Dirichlet Process (DP) models are a flexible class of Bayesian nonparametric (BNP) models with broad applicability. DP models can be used for unsupervised clustering, nonparametric density estimation, and nonparametric regressions. 
+Dirichlet Process (DP) models are a flexible class of Bayesian nonparametric (BNP) models with broad applicability. DP models can be used for unsupervised clustering, Bayesian bootstrapping, nonparametric density estimation, nonparametric regression, and more. 
 
 The Dirichlet Process is a distribution over distributions. Whereas a probability distribution characterizes the uncertainty about realizations of a random variable, the Dirichlet Process characterizes the uncertainty about the distribution itself. 
 
@@ -8,16 +8,17 @@ This is not an immediately intuitive concept. The purpose of this interactive tu
 Note: this app uses `MathJax` to render mathematical equations. Internet access is required for `MathJax` to work.
 
 ## Prerequisites
-This tutorial assumes you have an advanced undergraduate/graduate level understanding of probability theory and familiarity with parametric Bayesian principles and methods. A working knowledge of Monte Carlo Markov Chain (MCMC) is also helpful.
+This tutorial assumes you have an advanced undergraduate/graduate level understanding of probability theory and familiarity with parametric Bayesian principles and methods (e.g., posterior inference and conjugacy). A working knowledge of Monte Carlo Markov Chain (MCMC) is also helpful.
 
 ## Contents
 Below is an outline of this tutorial. The numbers correspond to the numbered tabs in the ribbon above.
 
 1. Realizations of a DP. 
       + a. Interactive visualization of draws/realizations from Dirichlet Processes user-specified DP parameters.
-      + b. The stick-breaking characterization of the Dirichlet Process.
+      + b. Stick-Breaking Processes.
 2. Posterior of a DP.
-      + a. Interactive visualization of draws from the posterior of a probability mass function estimation model with DP prior.
+      + a. Interactive visualization of Bayesian inference on pmfs using a DP prior.
+      + b. The Bayesian bootstrap.
 3. DP Mixtures.
       + a. Interactive visualization of density estimation using a DP prior.
       + b. Interactive visualization of clustering induced by a DP prior.
