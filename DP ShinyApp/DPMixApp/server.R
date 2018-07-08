@@ -1,4 +1,9 @@
 library(shiny)
+library(MCMCpack)
+
+package_list <- c("MCMCpack",'pacman','rgdal')
+not_intallated <- package_list[!(package_list %in% installed.packages()[,"Package"])]
+if(length(not_intallated)>0) install.packages(not_intallated, dependencies = TRUE)
 
 ###--------------------------------------------------------------------------###
 ####                        helper functions                                ####
@@ -112,6 +117,7 @@ shinyServer(function(input, output) {
   
   output$PoissonPosterior <- renderPlot({
     
+    # draw from DP with standard normal base measure
     set.seed(10)
     n <- 30
     true_lambda <- 20
@@ -120,7 +126,7 @@ shinyServer(function(input, output) {
     pr_lambda <- input$pr_lambda
     
     d <- rpois(n, lambda = true_lambda)
-    d <- factor(d, levels=0:max(d))
+    d <- factor(d, levels=0:(max(d)+2))
     d <- d[d!=18] ## remove 18 for illustration.
     
     freq_tab <- table(d)/n
@@ -132,32 +138,33 @@ shinyServer(function(input, output) {
     pr_mean <- dpois(x = x_range, lambda = pr_lambda)
     names(pr_mean) <- x_range
     
-    post_exp <- (alpha/(alpha+n))*pr_mean + (n/(alpha+n))*c(freq_tab,c(0,0))
+    post_exp <- (alpha/(alpha+n))*pr_mean + (n/(alpha+n))*freq_tab
     
     # take some illustrative draws from posterior, also a DP.
-    G_0 <- function(n) sample(x = c(x_range, 30:100), size = n, replace = T, 
-                              prob = c((alpha/(alpha+n))*pr_mean + (n/(alpha+n))*c(freq_tab,c(0,0)), (alpha/(alpha+n))*dpois(30:100, pr_lambda)) )
-    tt <- replicate(n = 10, rdp_stickbreak(n + alpha, G_0) )
-        
+    tt<-rdirichlet(n = 100, alpha = alpha*pr_mean + n*freq_tab )
     
-    plot(freq_tab, xlim=c(0, max(d)+2), 
+    plot(freq_tab, xlim=c(0, max(d)+2), ylim=c(0,.25),
          main = 'Observed Data with Posterior Mean of Data Distribution',
          xlab='y', ylab='Probability/Relative Frequency of Observed Data')
-    lines(x_range, pr_mean, type='l')
+    
+    for(i in 2:100){
+      lines( x_range, tt[i,], type='l', col='gray')
+    }
+    
     lines(x_range, post_exp, type='l', col='red', lwd=3) 
+    
+    lines(x_range, pr_mean, type='l', col='blue', lwd=3)
+    
+    lines(freq_tab, type='h')
+    
     legend('topleft', 
            legend = c('Observed Frequency',
                       'Prior mean, E[DP(alpha, G_0)] = G_0',
-                      'Posterior mean'),
-           col=c('black','black','red'),
+                      'Posterior mean',
+                      '100 Draws from Posterior'),
+           col=c('black','blue','red','gray'),
            lty = c(1,1,1), lwd=c(1,1,3),
            bty='n')
-    
-    #points(tt[,1,3], 100*tt[,2,3], col='red')
-    # for(i in 1:10){
-    #   lines( tt[,1,i], tt[,2,i], type='l', col='gray')
-    # }
-    
   })
   
   ###------------------------------------------------------------------------###

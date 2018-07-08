@@ -17,26 +17,55 @@ rdp_stickbreak<-function(alpha, G_0){
 }
 
 
+library(MCMCpack)
 # draw from DP with standard normal base measure
-draws <- replicate(15, rdp_stickbreak(200, G_0 = function(n) rnorm(n)) )
+set.seed(10)
+n <- 30
+true_lambda <- 20
 
-plot( draws[,1,1], cumsum(draws[,2,1]), type='l')
-for(i in 2:15){
-  lines( draws[,1,i], cumsum(draws[,2,i]), type='l')
+alpha <- 10
+pr_lambda <- 20
+
+d <- rpois(n, lambda = true_lambda)
+d <- factor(d, levels=0:(max(d)+2))
+d <- d[d!=18] ## remove 18 for illustration.
+
+freq_tab <- table(d)/n
+plot(freq_tab)
+
+d <- as.numeric(as.character(d))
+
+x_range <- 0:(max(d)+2)
+pr_mean <- dpois(x = x_range, lambda = pr_lambda)
+names(pr_mean) <- x_range
+
+post_exp <- (alpha/(alpha+n))*pr_mean + (n/(alpha+n))*freq_tab
+
+# take some illustrative draws from posterior, also a DP.
+tt<-rdirichlet(n = 100, alpha = alpha*pr_mean + n*freq_tab )
+
+plot(freq_tab, xlim=c(0, max(d)+2), ylim=c(0,.25),
+     main = 'Observed Data with Posterior Mean of Data Distribution',
+     xlab='y', ylab='Probability/Relative Frequency of Observed Data')
+
+for(i in 2:100){
+  lines( x_range, tt[i,], type='l', col='gray')
 }
-plot(function(x) pnorm(x), add=T, col='red', xlim=c(-3,3), lwd=3 )
 
-## now consider count data from poisson distribution
-n <-1000
-alpha <- 20
+lines(x_range, post_exp, type='l', col='red', lwd=3) 
 
-d <- rpois(n, lambda = 20)
-table(d)
+lines(x_range, pr_mean, type='l', col='blue', lwd=3)
 
-pr <- alpha*dpois(x = 0:30, lambda = 5)
+lines(freq_tab, type='h')
 
-post <- (alpha/(alpha+n))*pr + (n/(alpha+n))*c(0,table(d), rep(0, 8))
+legend('topleft', 
+       legend = c('Observed Frequency',
+                  'Prior mean, E[DP(alpha, G_0)] = G_0',
+                  'Posterior mean',
+                  '100 Draws from Posterior'),
+       col=c('black','blue','red','gray'),
+       lty = c(1,1,1), lwd=c(1,1,3),
+       bty='n')
 
-hist(d, freq = T)
-lines(0:30, 1000*dpois(x = 0:30, lambda = 5), type='l')
-lines(0:30, post, type='l')
+
+
