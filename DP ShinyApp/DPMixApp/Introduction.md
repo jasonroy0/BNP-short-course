@@ -31,6 +31,6 @@ This application was originally designed to complement a short course on BNP met
 
 All source code for this application can be found on the short course [GitHub repository](https://github.com/jasonroy0/BNP-short-course).
 
-The application was programmed in R using the `Shiny` package by [Arman Oganisian](https://twitter.com/StableMarkets).
+The application was programmed in R using the `Shiny` package by Arman Oganisian ( [Twitter](https://twitter.com/StableMarkets), [GitHub](https://github.com/stablemarkets) ) .
 
-To report bugs, please start an issue on our [GitHub issues page](https://github.com/jasonroy0/BNP-short-course/issues).
+To report bugs, please open an issue on our [GitHub issues page](https://github.com/jasonroy0/BNP-short-course/issues).

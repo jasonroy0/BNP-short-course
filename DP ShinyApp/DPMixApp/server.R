@@ -1,9 +1,11 @@
-library(shiny)
-library(MCMCpack)
 
-package_list <- c("MCMCpack",'pacman','rgdal')
+# conditionally install required packages if not already installed.
+package_list <- c("MCMCpack")
 not_intallated <- package_list[!(package_list %in% installed.packages()[,"Package"])]
 if(length(not_intallated)>0) install.packages(not_intallated, dependencies = TRUE)
+
+library(shiny)
+library(MCMCpack)
 
 ###--------------------------------------------------------------------------###
 ####                        helper functions                                ####
@@ -112,6 +114,7 @@ shinyServer(function(input, output) {
   set.seed(10)
   n <- 30
   true_lambda <- 20
+  n_post_draws <- 100
   d <- rpois(n, lambda = true_lambda)
   #output$freq_tab <- renderTable({table(d)})
   
@@ -141,14 +144,14 @@ shinyServer(function(input, output) {
     post_exp <- (alpha/(alpha+n))*pr_mean + (n/(alpha+n))*freq_tab
     
     # take some illustrative draws from posterior, also a DP.
-    tt<-rdirichlet(n = 100, alpha = alpha*pr_mean + n*freq_tab )
+    post_draws<-rdirichlet(n = n_post_draws, alpha = alpha*pr_mean + n*freq_tab)
     
     plot(freq_tab, xlim=c(0, max(d)+2), ylim=c(0,.25),
          main = 'Observed Data with Posterior Mean of Data Distribution',
          xlab='y', ylab='Probability/Relative Frequency of Observed Data')
     
-    for(i in 2:100){
-      lines( x_range, tt[i,], type='l', col='gray')
+    for(i in 2:n_post_draws){
+      lines( x_range, post_draws[i,], type='l', col='gray')
     }
     
     lines(x_range, post_exp, type='l', col='red', lwd=3) 
@@ -163,13 +166,50 @@ shinyServer(function(input, output) {
                       'Posterior mean',
                       '100 Draws from Posterior'),
            col=c('black','blue','red','gray'),
-           lty = c(1,1,1), lwd=c(1,1,3),
+           lty = c(1,1,1), lwd=c(3,3,3),
            bty='n')
   })
   
   ###------------------------------------------------------------------------###
   ####                  Panel 2b - Bayesian Bootstrap                       ####
   ###------------------------------------------------------------------------###
+  
+  #post_draws<-rdirichlet(n = n_post_draws, alpha = alpha*pr_mean + n*freq_tab)
+
+  output$tab <- renderTable({
+    freq_tab <- matrix(table(d), nrow=1)
+    colnames(freq_tab) <- names(table(d))
+    freq_tab
+  })
+  
+  output$bootPlot <- renderPlot({
+    ## bayesian bootstrap
+    n_boot <- input$n_boot
+    freq_non_zero <- freq_tab[freq_tab>0]
+    post_draws <- rdirichlet(n = n_boot, alpha = n*freq_non_zero)
+    res_bayes <- apply(post_draws, 1, function(x)  sum(x*as.numeric(names(freq_non_zero))) )
+    
+    ## frequentist bootstrap
+    res_freq <- replicate(n_boot, expr = {mean(sample(x = d, size = n, replace = T))})
+    
+    
+    par(mfrow=c(2,1))
+    
+    hist(res_bayes, breaks=50, xlim=c(17,23),
+         main=paste0('Posterior Distribution of mean, \nBayesian Boostrap (B=',n_boot,")"),
+         xlab='mean')
+    abline(v=mean(res_bayes), col='blue', lwd=3)
+    abline(v=20, col='red', lwd=3)
+    legend('topleft', legend = c('True Lambda', 'Posterior Mean'), col=c('blue','red'), lwd=c(3,3), bty='n')
+    
+    hist(res_freq, breaks=50, xlim=c(17,23),
+         main=paste0('Sampling Distribution of mean, \nClassical Boostrap (B=',n_boot,')'),
+         xlab='mean')
+    abline(v=mean(res_freq), col='blue', lwd=3)
+    abline(v=20, col='red', lwd=3)
+    legend('topleft', legend = c('True Lambda', 'Sampling Dist. Mean'), col=c('blue','red'), lwd=c(3,3), bty='n')
+    
+  })
   
   
 })

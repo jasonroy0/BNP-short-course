@@ -22,6 +22,7 @@ library(MCMCpack)
 set.seed(10)
 n <- 30
 true_lambda <- 20
+n_post_draws <- 100
 
 alpha <- 10
 pr_lambda <- 20
@@ -42,14 +43,14 @@ names(pr_mean) <- x_range
 post_exp <- (alpha/(alpha+n))*pr_mean + (n/(alpha+n))*freq_tab
 
 # take some illustrative draws from posterior, also a DP.
-tt<-rdirichlet(n = 100, alpha = alpha*pr_mean + n*freq_tab )
+post_draws<-rdirichlet(n = n_post_draws, alpha = alpha*pr_mean + n*freq_tab )
 
 plot(freq_tab, xlim=c(0, max(d)+2), ylim=c(0,.25),
      main = 'Observed Data with Posterior Mean of Data Distribution',
      xlab='y', ylab='Probability/Relative Frequency of Observed Data')
 
-for(i in 2:100){
-  lines( x_range, tt[i,], type='l', col='gray')
+for(i in 2:n_post_draws){
+  lines( x_range, post_draws[i,], type='l', col='gray')
 }
 
 lines(x_range, post_exp, type='l', col='red', lwd=3) 
@@ -68,4 +69,5 @@ legend('topleft',
        bty='n')
 
 
-
+alpha <- .0001
+wghts_post_draws<-rdirichlet(n = n_post_draws, alpha = alpha*pr_mean + n*freq_tab )
