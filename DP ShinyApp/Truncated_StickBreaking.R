@@ -84,6 +84,7 @@ for(i in 2:gibbs_iter){
   
 }
 
+## plot observed data with posterior predictive density draws.
 hist(y, freq=F)
 for(i in burnin:gibbs_iter){  
   lines(density(post_pred_shell[,i])) 
