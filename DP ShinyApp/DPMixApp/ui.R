@@ -89,7 +89,7 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                                  sliderInput(inputId = 'n_boot',
                                              label = "Number of Bootstrap/Posterior samples (Panel 2.b.), \\(B\\):",
                                              min = 100,
-                                             max = 1000,
+                                             max = 10000,
                                              value = 100)
                                  
                                ),
@@ -123,7 +123,7 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                                            
                                            
                                            tabPanel("2.b. Bayesian Bootstrap",
-                                                    HTML('Suppose we want to estimate the mean of the population from which our sample of \\(n=10\\) was drawn.',
+                                                    HTML('Suppose we want to estimate the mean of the population from which our sample of \\(n=30\\) was drawn.',
                                                          'One possible estimator is the sample mean. One frequentist way to compute the variance of this estimate is through bootstrapping.',
                                                          'Suppose we observe data of sample size \\(n\\) having \\(U\\) unique values, \\( (y_1, y_2, \\dots, y_U) = \\{ y_j\\}_{j \\in 1:U} \\), of data points - each with some frequency.", 
                                                          "Below is an example of some simulated data. We observe the value 18 once, the value 19 five times, etc.'),
@@ -137,7 +137,7 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                                                          "$$n\\cdot [\\hat{f}^{(b)}(y_1),\\dots, \\hat{f}^{(b)}(y_j),\\dots, \\hat{f}^{(b)}(y_U)] \\sim Multinomial(N, [\\hat{f}(y_1),\\dots, \\hat{f}(y_j),\\dots, \\hat{f}(y_U)])$$",
                                                          "The frequentist bootstrap draws \\(B\\) weight vectors from this distribution and, with each draw, computes \\( \\bar{x}^{(b)}, \ b\\in\\{1,2,\\dots, B\\} \\).",
                                                          "This set is the sampling distribution, which we use to compute the variance.",
-                                                         "The Bayesian bootstrap approach differs slightly. Instead, it treats the multinomial weights,[\\hat{f}(y_1),\\dots, \\hat{f}(y_j),\\dots, \\hat{f}(y_U)], as an unknown distribution and places a prior on it. You guessed it, the DP prior - a distribution over distributions - is exactly the prior that is used.",
+                                                         "The Bayesian bootstrap approach differs slightly. Instead, it treats the multinomial weights,\\([\\hat{f}(y_1),\\dots, \\hat{f}(y_j),\\dots, \\hat{f}(y_U)]\\), as an unknown distribution and places a prior on it. You guessed it, the DP prior - a distribution over distributions - is exactly the prior that is used.",
                                                          "Specifically we place a DP prior with an infinitesmally small value of \\(\\alpha\\). The resulting posterior of the distribution/weights is again a DP (by the conjugacy established in panel 2.a.)",
                                                          "$$[f(y_1),\\dots, f(y_j),\\dots, f(y_U)] \\ \\ | \\ \\ \\vec{y} \\sim DP(N\\cdot [\\hat{f}(y_1),\\dots, \\hat{f}(y_j),\\dots, \\hat{f}(y_U)] )$$",
                                                          "Above, \\( \\vec{y}\\) is shorthand for the observed data. The Bayesian approach draws \\(B\\) weight vectors from this posterior, using each draw to compute \\( \\bar{x}^{(b)} \\sum_{j=1}^U \\Big[ y_j\\cdot f^{(b)}(y_j)  \\Big] \\).", 
@@ -156,7 +156,49 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                             )
                    ),
                    
-                   tabPanel("3. DP Mixtures"),
+                   tabPanel("3. DP Mixtures",
+                            sidebarLayout(
+                              sidebarPanel(
+                                sliderInput(inputId = 'gibbs_iter',
+                                            label = "Number of MCMC Iterations:",
+                                            min = 2,
+                                            max = 50,
+                                            value = 2, 
+                                            animate = T),
+                                sliderInput(inputId = 'alpha_3',
+                                            label = "Concentration parameter, \\(\\alpha\\):",
+                                            min = .001,
+                                            max = 500,
+                                            value = 100),
+                                sliderInput(inputId = 'lambda',
+                                            label = "Prior Mean:",
+                                            min = 0,
+                                            max = 100,
+                                            value = 50),
+                                sliderInput(inputId = 'tau',
+                                            label = "Prior Variance:",
+                                            min = 10,
+                                            max = 500,
+                                            value = 50)
+                                
+                              ),
+                              mainPanel(withMathJax(),
+                                        tabsetPanel(
+                                          
+                                          tabPanel("3.a. Posterior Density Estimation", 
+                                                   fluidRow(
+                                                     column(10, align="center",
+                                                            plotOutput("mixDensity", width = "100%")
+                                                     )))
+                                          
+                                          # tabPanel("3.b. DP-induced Clustering", 
+                                          #          fluidRow(
+                                          #            column(10, align="center",
+                                          #                   plotOutput("mixClass", width = "100%")
+                                          #            )))
+                                        )
+                            )
+                            )),
                    
                    tabPanel("4. References")
                   
