@@ -111,7 +111,7 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                                                          "In the plot below, the vertical bars represent the relative frequency of unique observed \\(y_i\\).",
                                                          "The blue line represents the prior base distribution, which is \\(Pois(\\lambda)\\).",
                                                          "The red line is the posterior mean of \\( G \\) - a compromise between the prior and the empirical distribution",
-                                                         "The gray lines are draws from the posterior distribution."),
+                                                         "The gray lines are draws from the posterior distribution. Note that using lines to represent a PMF is strictly not correct since there is no probability mass associated with non-integers. This is done purely to better the visualization."),
                                                     plotOutput("PoissonPosterior"),
                                                     HTML("If the concentration parameter, \\( \\alpha \\), equals the sample size, then we give equal weight to the prior and observed distributions.", 
                                                          "If \\( \\alpha \\) exceeds the sample size, more weight is given to the prior.",
@@ -185,11 +185,34 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                               mainPanel(withMathJax(),
                                         tabsetPanel(
                                           
-                                          tabPanel("3.a. Posterior Density Estimation", 
+                                          tabPanel("3.a. Posterior Density Estimation",
+                                                   HTML("In addition to distribution estimation and Bayesian bootstrapping, one widely used application of the Dirichlet Process is the estimation of mixture models.",
+                                                        "In this example we will consider Gaussian mixture models with known variance, but unknown means. Recall that a finite mixture model assumes that observations come from one of \\(K\\) clusters, each with a different mean.",
+                                                        "$$y_i \\ | \\ c_i, \\vec{\\mu} \\sim N(\\mu_{c_i}, \\phi ), \\ \\ c_i \\in \\{1,2,\\dots, K \\}$$",
+                                                        "Above, \\( \\vec{\\mu} = (\\mu_1, \\dots, \\mu_K)' \\). Although this is how mixtures are often written, the class indicators themselves are redundant. The formulation above is equivalent to the one below - which does not use indicators:",
+                                                        "$$y_i \\ | \\ \\mu_i \\sim N(\\mu_{i}, \\phi ), \\ \\ \\mu_i \\in \\{\\mu_1,\\mu_2,\\dots, \\mu_K \\}$$",
+                                                        "We can sample from the posterior of such a distribution by placing a prior, \\( \\mu_i \\sim G\\) on each of the latent cluster means. For Example, in the finite-dimensional case, \\( G \\stackrel{d}{=} Categorical(p_1,\\dots, p_K) \\).",
+                                                        "In other words, we place prior measures \\( P(\\mu_i = \\mu_1) = p_1 \\), \\(P(\\mu_i = \\mu_2) = p_2 \\), and so on. The draw-back of this approach is the need to specifiy \\( K \\). This makes the model fully parametric in the sense that we have a finite-dimensional paramter space.", 
+                                                        "<br> <br>",
+                                                        "A Bayesian nonparametric formulation takes this one step further by taking \\(K \\rightarrow \\infty \\). This is the infinite Gaussian mixture. In other words, we assume there are infinitely many parameters.", 
+                                                        "Therefore, the vector of cluster means \\( \\vec{\\mu} = (\\mu_1,, \\mu_2, \\dots )' \\) is now infinite-dimensional",
+                                                        "Setting \\( G \\stackrel{d}{=} Categorical() \\) won't do anymore, since it gives us a measure for \\(\\mu_i\\) over finitely many possible values.",
+                                                        "However, \\( G \\stackrel{d}{=} DP(\\alpha G_0) \\) is a suitable prior. Why? Well we want \\(G \\) to be a function that takes as input a \\(\\mu_i \\) and outputs a probability measure for \\(\\mu_i\\), over all possible values of \\(\\mu_i \\). Now, there are infinitely many possible values. So we want an infinite dimensional vector that sums to 1.",
+                                                        "As we've seen, this is exactly what a draw from the DP gives us."),
                                                    fluidRow(
                                                      column(10, align="center",
                                                             plotOutput("mixDensity", width = "100%")
-                                                     )))
+                                                     )),
+                                                   HTML("Above, we observe 500 data points shown in the histogram. We sample from the posterior of the infinite Gaussian mixture model.",
+                                                        "We use a conjugate Gibbs sampler with a truncated stick-breaking process to sample from the posterior. Press the play button to see the results of each Gibbs iteration.",
+                                                        "The density lines over the histogram are posterior density estimates. The MCMC chains show the \\(\\mu_i \\) posterior draws for the first 20 patients.",
+                                                        "<br> <br>",
+                                                        "Notice that we do not specify \\(K \\), yet the mixture model density estimates clearly show what is a combination of 3 Gaussians.",
+                                                        "The MCMC chains seem to converge to three distinct means. Though there are 20 lines, many of the lines are fully overlapped.",
+                                                        "This is because the DP prior placed on the \\(\\mu_i\\) are discrete (as we covered in previous panels), the probability of ties (i.e. several \\( \\mu_i \\) being equal) is positive.",
+                                                        "In other words, the DP prior induces clustering. So that even though there are infinitely many clusters available, one finitely many are favored.",
+                                                        "<br> <br>",
+                                                        "A high concentration value means that a prior we favor many clusters. A low value means that a prior we favor very few clusters (see panel 1.b., for low  \\(\\alpha \\), the DP places most weight on very view points)."))
                                           
                                           # tabPanel("3.b. DP-induced Clustering", 
                                           #          fluidRow(
@@ -200,7 +223,8 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                             )
                             )),
                    
-                   tabPanel("4. References")
+                   tabPanel("4. References",
+                            mainPanel(includeMarkdown('References.md')))
                   
   )
 )
