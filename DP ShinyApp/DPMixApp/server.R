@@ -330,36 +330,6 @@ shinyServer(function(input, output) {
   colfunc <- colorRampPalette(c("lightgray", "darkred"))
   col_vec <- colfunc(20)
   
-  # output$mixDensity <- renderPlot({
-  #   
-  #   res <- gibbs_samp(gibbs_iter = input$gibbs_iter, 
-  #                     lambda = input$lambda, tau = input$tau , 
-  #                     alpha = input$alpha_3 )
-  #   
-  #   mu_shell <- res$mu_shell
-  #   class_shell <- res$class_shell
-  #   post_pred <- res$post_pred_shell
-  #   
-  #   
-  #   par(mfrow=c(1,2))
-  #   
-  #   for(i in 2:input$gibbs_iter){
-  #     
-  #     hist(y, xlim=c(0,60), freq = F, ylim=c(0,.05))
-  #     lines(density(post_pred[,i]))
-  #     
-  #     
-  #     plot(mu_shell[class_shell[1,i],2], type='l', ylim=c(-10,100), xlim=c(0,20),
-  #          xlab='MCMC iteration', ylab='Gaussian Means',
-  #          main = 'MCMC chains for Gaussian mixture Means')
-  #     lines(mu_shell[class_shell[2,i], 2:i])
-  #     lines(mu_shell[class_shell[10,i], 2:i])
-  #     lines(mu_shell[class_shell[13,i], 2:i])
-  #     
-  #   }
-  #   
-  # })
-  
   output$mixDensity <- renderPlot({
     
     res <- gibbs_samp(gibbs_iter = input$gibbs_iter, 
@@ -389,30 +359,6 @@ shinyServer(function(input, output) {
     
   })
   
-  # output$mixClass <- renderPlot({
-  #   
-  #   res <- gibbs_samp(gibbs_iter = input$gibbs_iter, 
-  #                     lambda = input$lambda, tau = input$tau , 
-  #                     alpha = input$alpha_3 )
-  #   
-  #   res <- gibbs_samp(gibbs_iter = 1000,
-  #                     lambda = 50, tau = 100 , 
-  #                     alpha = 1 )
-  #   
-  #   mu_shell <- res$mu_shell
-  #   class_shell <- res$class_shell
-  #   post_pred <- res$post_pred_shell
-  #   
-  #   par(mfrow=c(1,1))
-  #   
-  #   for(i in 2:input$gibbs_iter){
-  #     
-  #     tab<-apply(class_shell[,2:i, drop=F], 1, function(x) sort(x,decreasing = T)[1] )
-  #     tab <- table(factor(tab, levels = 1:K))/n
-  #     plot(tab)
-  #     
-  #   }
-  #   
-  # })
+
   
 })

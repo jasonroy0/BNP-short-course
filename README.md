@@ -1,5 +1,5 @@
 # Repository for BNP Methods for Causal Inference Short Course at JSM 2018
-Repository Authors: Jason Roy (@jasonroy0), Mike Daniels (@mjdaniels), Arman Oganisian (@stablemarkets)
+Repository Authors: Arman Oganisian (@stablemarkets), Jason Roy (@jasonroy0), Mike Daniels (@mjdaniels)
 
 Please contact Arman for coding maintenance/GitHub related questions.
 
@@ -21,6 +21,8 @@ library(shiny)
 runGitHub('jasonroy0/BNP-short-course/', username = 'jasonroy0', subdir = 'DP ShinyApp/DPMixApp/')
 ``` 
 2. Gaussian Processes (GP)
+3. BNP Mediation
+    - Package available on [GitHub](https://github.com/lit777/BNPMediation) and [CRAN](https://cran.r-project.org/web/packages/BNPMediation/index.html).
 
 ## Issues
 If you have any issues with the code, please open an issue on GitHub.

@@ -3,7 +3,7 @@ library(shiny)
 # Define UI for application that draws a histogram
 shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                    tabPanel('0. Introduction',
-                            mainPanel(includeMarkdown('Introduction.md'))
+                            mainPanel(includeMarkdown('Introduction.Rmd'))
                             ),
                    tabPanel("1. Realizations of a DP",
                             sidebarLayout(
@@ -213,18 +213,13 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                                                         "In other words, the DP prior induces clustering. So that even though there are infinitely many clusters available, one finitely many are favored.",
                                                         "<br> <br>",
                                                         "A high concentration value means that a prior we favor many clusters. A low value means that a prior we favor very few clusters (see panel 1.b., for low  \\(\\alpha \\), the DP places most weight on very view points)."))
-                                          
-                                          # tabPanel("3.b. DP-induced Clustering", 
-                                          #          fluidRow(
-                                          #            column(10, align="center",
-                                          #                   plotOutput("mixClass", width = "100%")
-                                          #            )))
                                         )
                             )
                             )),
                    
                    tabPanel("4. References",
-                            mainPanel(includeMarkdown('References.md')))
+                            mainPanel(
+                              includeMarkdown('References.Rmd')))
                   
   )
 )
