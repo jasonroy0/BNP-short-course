@@ -27,6 +27,20 @@ rdp_stickbreak<-function(alpha, G_0){
   return(draw_dp)
 }
 
+stickbreak<-function(alpha, K){
+  v <- rbeta(n = K, shape1 = 1, shape2 = alpha)
+  
+  w <- numeric(length = K)
+  w[1] <- v[1]
+  v[K] <- 1
+  for(i in 2:K){
+    w[i] <- v[i]*prod(1-v[1:(i-1)]) 
+  }
+  
+  return(w)
+}
+
+
 parse_input_DPdraw <- function(base){
   if(base==1){
     G_0 = function(n) rnorm(n)
@@ -48,7 +62,7 @@ parse_input_DPdraw <- function(base){
 }
 
 
-gibbs_samp <- function(gibbs_iter, lambda, tau, alpha){
+gibbs_samp <- function(gibbs_iter, lambda, tau, alpha, n, y){
   
   K <- 10
   phi <- 25
@@ -316,54 +330,41 @@ shinyServer(function(input, output) {
   colfunc <- colorRampPalette(c("lightgray", "darkred"))
   col_vec <- colfunc(20)
   
-  stickbreak<-function(alpha, K){
-    v <- rbeta(n = K, shape1 = 1, shape2 = alpha)
-    
-    w <- numeric(length = K)
-    w[1] <- v[1]
-    v[K] <- 1
-    for(i in 2:K){
-      w[i] <- v[i]*prod(1-v[1:(i-1)]) 
-    }
-    
-    return(w)
-  }
+  # output$mixDensity <- renderPlot({
+  #   
+  #   res <- gibbs_samp(gibbs_iter = input$gibbs_iter, 
+  #                     lambda = input$lambda, tau = input$tau , 
+  #                     alpha = input$alpha_3 )
+  #   
+  #   mu_shell <- res$mu_shell
+  #   class_shell <- res$class_shell
+  #   post_pred <- res$post_pred_shell
+  #   
+  #   
+  #   par(mfrow=c(1,2))
+  #   
+  #   for(i in 2:input$gibbs_iter){
+  #     
+  #     hist(y, xlim=c(0,60), freq = F, ylim=c(0,.05))
+  #     lines(density(post_pred[,i]))
+  #     
+  #     
+  #     plot(mu_shell[class_shell[1,i],2], type='l', ylim=c(-10,100), xlim=c(0,20),
+  #          xlab='MCMC iteration', ylab='Gaussian Means',
+  #          main = 'MCMC chains for Gaussian mixture Means')
+  #     lines(mu_shell[class_shell[2,i], 2:i])
+  #     lines(mu_shell[class_shell[10,i], 2:i])
+  #     lines(mu_shell[class_shell[13,i], 2:i])
+  #     
+  #   }
+  #   
+  # })
   
   output$mixDensity <- renderPlot({
     
     res <- gibbs_samp(gibbs_iter = input$gibbs_iter, 
                       lambda = input$lambda, tau = input$tau , 
-                      alpha = input$alpha_3 )
-    
-    mu_shell <- res$mu_shell
-    class_shell <- res$class_shell
-    post_pred <- res$post_pred_shell
-    
-    
-    par(mfrow=c(1,2))
-    
-    for(i in 2:input$gibbs_iter){
-      
-      hist(y, xlim=c(0,60), freq = F, ylim=c(0,.05))
-      lines(density(post_pred[,i]))
-      
-      
-      plot(mu_shell[class_shell[1,i],2], type='l', ylim=c(-10,100), xlim=c(0,20),
-           xlab='MCMC iteration', ylab='Gaussian Means',
-           main = 'MCMC chains for Gaussian mixture Means')
-      lines(mu_shell[class_shell[2,i], 2:i])
-      lines(mu_shell[class_shell[10,i], 2:i])
-      lines(mu_shell[class_shell[13,i], 2:i])
-      
-    }
-    
-  })
-  
-  output$mixDensity <- renderPlot({
-    
-    res <- gibbs_samp(gibbs_iter = input$gibbs_iter, 
-                      lambda = input$lambda, tau = input$tau , 
-                      alpha = input$alpha_3 )
+                      alpha = input$alpha_3, n = n, y=y )
     
     mu_shell <- res$mu_shell
     class_shell <- res$class_shell
