@@ -20,9 +20,7 @@ Below is an outline of this tutorial. The numbers correspond to the numbered tab
       + a. Interactive visualization of Bayesian inference on pmfs using a DP prior.
       + b. The Bayesian bootstrap.
 3. DP Mixtures.
-      + a. Interactive visualization of density estimation using a DP prior.
-      + b. Interactive visualization of clustering induced by a DP prior.
-      + c. Outline of DP priors for nonparametric regression.
+      + a. Interactive visualization of mixture model estimation and DP-induced unsupervized clustering.
 4. References.
 
 ## Issues and Contact Information
