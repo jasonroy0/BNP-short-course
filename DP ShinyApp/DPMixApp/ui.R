@@ -185,7 +185,7 @@ shinyUI(navbarPage(title = "Interactive Dirichlet Process Tutorial",
                               mainPanel(withMathJax(),
                                         tabsetPanel(
                                           
-                                          tabPanel("3.a. Posterior Density Estimation",
+                                          tabPanel("3.a. Mixture Modeling and Clustering",
                                                    HTML("In addition to distribution estimation and Bayesian bootstrapping, one widely used application of the Dirichlet Process is the estimation of mixture models.",
                                                         "In this example we will consider Gaussian mixture models with known variance, but unknown means. Recall that a finite mixture model assumes that observations come from one of \\(K\\) clusters, each with a different mean.",
                                                         "$$y_i \\ | \\ c_i, \\vec{\\mu} \\sim N(\\mu_{c_i}, \\phi ), \\ \\ c_i \\in \\{1,2,\\dots, K \\}$$",
