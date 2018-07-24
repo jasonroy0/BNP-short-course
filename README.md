@@ -13,8 +13,8 @@ This repository contains much of the code behind the figures and demos covered i
 ## Contents
 This repository contains R code covering the following topics:
 1. Dirichlet Process (DP) Mixtures
-    - We have an interactive tutorial for DP methods run through shiny.The app will be hosted on the web at least for the duration of the short course: https://stablemarkets.shinyapps.io/dpmixapp/. Note: if many people access the app simultaneously, the app will run slowly. For this reason, you can run it locally.
-    - To run the app locally within RStudio, run the following lines of code while making sure to have "shiny" app installed
+    - We have an interactive tutorial for DP methods (built with R Shiny). The app will be hosted on the web at least for the duration of the short course: https://stablemarkets.shinyapps.io/dpmixapp/.
+    - Note: if many people access the app simultaneously, the app will run slowly. For this reason, you can run it locally. To run the app locally within RStudio, run the following lines of code while making sure to have "shiny" app installed
 
 ```
 install.packages("shiny")
